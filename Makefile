@@ -9,6 +9,7 @@ NAME_DEBUG := debug
 VPATH := src
 SRC += main.c
 SRC += gui.c
+SRC += filetree.c
 
 # ↓ Debug only sources
 

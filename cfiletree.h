@@ -16,4 +16,6 @@ bool gui_run(gui_t *gui);
 void gui_handlle_event(gui_t *gui, sfEvent *eventp);
 void gui_finalize(gui_t *gui);
 
-#endif
+bool filetree_traverse(const char *dir_path);
+
+#endif /* !CFILETREE */
