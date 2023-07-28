@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include "cfiletree.h"
+#include "debug.h"
 
 int main(void)
 {
     bool succeed;
     gui_t gui;
 
+    DEBUG_MSG(YELLOW "Running in debug mode" RESET);
     gui_init(&gui);
     if (!gui.is_running)
         return EXIT_FAILURE;
