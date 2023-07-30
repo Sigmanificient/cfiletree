@@ -1,3 +1,6 @@
+#include <malloc.h>
+#include <string.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -9,6 +12,8 @@
 static
 void print_tree(char *path)
 {
+    char buf[1024];
+
     if (path == NULL) {
         path = malloc(PATH_MAX * sizeof(char));
         if (path == NULL)

@@ -2,6 +2,7 @@
     #define CFILETREE
 
     #include <stdbool.h>
+    #include <stddef.h>
 
     #include <SFML/Graphics/Types.h>
     #include <SFML/Window/Event.h>
