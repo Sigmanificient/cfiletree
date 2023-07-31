@@ -8,6 +8,7 @@
 
 #include "cfiletree.h"
 #include "debug.h"
+#include "gui.h"
 
 static
 void print_tree(char *path)

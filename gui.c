@@ -1,8 +1,8 @@
 #include <stdbool.h>
-#include <SFML/Graphics.h>
 
-#include "SFML/Graphics/RenderWindow.h"
-#include "cfiletree.h"
+#include <SFML/Graphics/RenderWindow.h>
+
+#include "gui.h"
 
 bool gui_init(gui_t *gui)
 {

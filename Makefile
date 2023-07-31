@@ -20,7 +20,7 @@ CC := cc
 
 CFLAGS := -W -Wall -Wextra
 CFLAGS := -O2 -march=native
-CFLAGS += -iquote .
+CFLAGS += -iquote ./include
 CFLAGS += -U_FORTIFY_SOURCE
 
 LDLIBS := -lm
