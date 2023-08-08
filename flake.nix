@@ -7,19 +7,52 @@
   };
 
   outputs = { self, nixpkgs, utils }:
-    utils.lib.eachDefaultSystem (system:
-      with import nixpkgs { inherit system; }; {
-        devShells.default = mkShell {
-          packages = [
-            criterion
-            csfml
-            gcc12
-            glibc
-            gcovr
-            ltrace
-            gnumake
-            valgrind
-          ];
+    utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      cc = pkgs.gcc12;
+
+      name = "cfiletree";
+      libs = with pkgs; [ csfml ];
+
+      mkInstall = bin: ''
+        mkdir -p $out/bin
+        cp ${bin} $out/bin
+      '';
+    in rec {
+      devShells.default = pkgs.mkShell {
+        packages = with pkgs; [
+          glibc
+          gcovr
+          ltrace
+          gnumake
+          valgrind
+        ] ++ [ cc ] ++ libs;
+      };
+
+      packages = {
+        ${name} = pkgs.stdenv.mkDerivation {
+          inherit name;
+
+          src = ./.;
+          makeFlags = [ "CC=${cc}/bin/gcc" ];
+
+          # ↓ Makefile tput
+          buildInputs = libs ++ [ pkgs.ncurses ];
+
+          hardeningDisable = [ "format" "fortify" ];
+          installPhase = mkInstall name;
         };
-      });
+
+        debug = packages.${name}.overrideAttrs({
+          name = "debug";
+
+          installPhase = mkInstall "debug";
+          buildPhase = ''
+            make debug
+          '';
+        });
+
+        default = self.packages.${system}.${name};
+      };
+    });
 }
