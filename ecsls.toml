@@ -1,0 +1,4 @@
+[reports]
+ignore = [ "C-G1", "C-F4", "C-C1" ]
+merge = "multiplier"
+
