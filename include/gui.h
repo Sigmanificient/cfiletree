@@ -1,6 +1,7 @@
 #ifndef GUI_H
     #define GUI_H
 
+    #include <stdbool.h>
     #include <SFML/Graphics/Types.h>
     #include <SFML/Window/Event.h>
 
@@ -15,4 +16,3 @@ void gui_handlle_event(gui_t *gui, sfEvent *eventp);
 void gui_finalize(gui_t *gui);
 
 #endif
-

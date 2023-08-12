@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <dirent.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -7,22 +8,20 @@
 #include <sys/stat.h>
 
 #include "cfiletree.h"
+#include "debug.h"
 
 static
-bool filetree_read_dir(
-    const char *dir_path,
-    struct dirent *entry,
-    char *file_path
-)
+void path_join(char *out, const char *dir, char *name)
 {
-    int written;
+    size_t dirlen = strlen(dir);
 
-    if (!strcmp(entry->d_name, "."))
-        return true;
-    if (!strcmp(entry->d_name, ".."))
-        return true;
-    written = snprintf(file_path, PATH_MAX, "%s/%s", dir_path, entry->d_name);
-    return written != -1;
+    if (dirlen < 1)
+        return;
+    strncpy(out, dir, PATH_MAX - 1);
+    if (out[dirlen - 1] != '/')
+        out[dirlen++] = '/';
+    strncpy(out + dirlen, name, PATH_MAX - dirlen);
+    DEBUG("[%s]\n", out);
 }
 
 static
@@ -32,31 +31,36 @@ void print_stat(char *filepath)
 
     if (stat(filepath, &st))
         return;
-    printf("-> %zu\n", sizeof(struct stat));
     printf("%s, %zuB\n", filepath, st.st_size);
 }
 
-bool filetree_traverse(const char *dir_path)
+static
+void read_entry(struct dirent *entry, const char *dirpath)
+{
+    bool succeed;
+    char filepath[PATH_MAX] = { '\0' };
+
+    if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+        return;
+    path_join(filepath, dirpath, entry->d_name);
+    if (*filepath == '\0')
+        return;
+    if (entry->d_type == DT_DIR)
+        filetree_traverse(filepath);
+    else
+        print_stat(filepath);
+}
+
+bool filetree_traverse(const char *dirpath)
 {
     struct dirent *entry;
-    char file_path[PATH_MAX] = { 0 };
-    DIR *dir = opendir(dir_path);
-    static int count = 0;
-
-    count++;
+    DIR *dir = opendir(dirpath);
 
     if (dir == NULL)
         return false;
     entry = readdir(dir);
     while (entry != NULL) {
-        if (!filetree_read_dir(dir_path, entry, file_path)) {
-            entry = readdir(dir);
-            continue;
-        }
-        if (entry->d_type == DT_DIR)
-            filetree_traverse(file_path);
-        else
-            print_stat(file_path);
+        read_entry(entry, dirpath);
         entry = readdir(dir);
     }
     closedir(dir);
